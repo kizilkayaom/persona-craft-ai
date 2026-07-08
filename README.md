@@ -26,7 +26,6 @@ Bu proje aşağıdaki ekip tarafından geliştirilmiştir:
 - [Prompt Engineering Stratejileri](#-prompt-engineering-stratejileri)
 - [Demo Senaryosu](#-demo-senaryosu)
 - [Proje Yapısı](#-proje-yapısı)
-- [Bilinen Sorunlar ve Sınırlamalar](#-bilinen-sorunlar-ve-sınırlamalar)
 - [Test Kapsamı](#-test-kapsamı)
 
 ---
