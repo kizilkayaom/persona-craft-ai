@@ -97,13 +97,12 @@ Uygulama açıldıktan sonra tarayıcınızda otomatik olarak `http://localhost:
    - *Zero-Shot* → Hızlı, doğrudan üretim
    - *Few-Shot* → Örnek metinlerden ilham alarak daha tutarlı format
    - *Chain-of-Thought* → Önce hedef kitle analizi yapıp sonra içerik üretir, süreç şeffaf şekilde gösterilir
-6. **Çıktı Dili ve Çıktı Türünü** seçin.
+6. **Çıktı Türünü** seçin.
 7. **"🚀 Kampanyayı Yeniden Pazarla"** butonuna tıklayın.
 8. Üretilen içeriği inceleyin, isterseniz **.txt olarak indirin**.
 
 > 💡 **İpucu:** Aynı ürünü farklı hedef kitle/ton kombinasyonlarıyla deneyerek PersonaCraft AI'nin kişiselleştirme gücünü karşılaştırabilirsiniz.
 
-> ⚠️ **Bilinen sınırlama:** Çıktı Dili seçici şu anda yalnızca Türkçe çıktı üretmektedir (bkz. [Bilinen Sorunlar](#-bilinen-sorunlar-ve-sınırlamalar)).
 
 ---
 
@@ -156,7 +155,7 @@ Aşağıdaki senaryo, uygulamanın sunumunda veya değerlendirmesinde kullanıla
 
 **Adım 4 — Kişiselleştirme gücünü gösterme**
 - Aynı ürünü, Hedef Kitle → *Kurumsal*, Ton → *Profesyonel & Kurumsal* olarak değiştirip tekrar üretin.
-- 🎯 Gösterilecek nokta: Aynı ürün, tamamen farklı bir dil ve yaklaşımla (veri odaklı, resmi) sunuluyor — "gençler" versiyonuyla yan yana karşılaştırın.
+- 🎯 Gösterilecek nokta: Aynı ürün, tamamen farklı bir yaklaşımla (veri odaklı, resmi) sunuluyor — "gençler" versiyonuyla yan yana karşılaştırın.
 
 **Adım 5 — İndirme**
 - Üretilen içeriği `.txt` olarak indirip gösterin.
@@ -190,7 +189,7 @@ Proje, aşağıdaki kategorilerde manuel test edilmiştir:
 - Arayüz (frontend) doğrulaması
 - Girdi validasyonu (boş alanlar, geçersiz API key)
 - Üç prompt stratejisinin karşılaştırmalı testi
-- Hedef kitle / ton / dil kişiselleştirme testleri
+- Hedef kitle / ton / kişiselleştirme testleri
 - Dosya indirme testi
 - Hata ve kenar durum (ağ hatası, rate limit, uzun girdi) testleri
 
