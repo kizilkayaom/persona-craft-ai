@@ -183,23 +183,6 @@ persona-craft-ai/
 └── README.md
 ```
 
----
-
-## ⚠️ Bilinen Sorunlar ve Sınırlamalar
-
-Yapılan test sürecinde tespit edilen ve ekip tarafından değerlendirilen bulgular:
-
-| Sorun | Etki | Durum |
-|---|---|---|
-| Çıktı Dili seçici (İngilizce/Almanca/Fransızca/İspanyolca) işlevsiz, model her zaman Türkçe üretiyor | Yüksek | Ekibe iletildi |
-| API hataları (geçersiz key, kota aşımı, bağlantı hatası) kullanıcıya ham/teknik mesaj olarak gösteriliyor | Orta | Ekibe iletildi |
-| "Tümü" çıktı türü seçildiğinde formatlar sıralı üretiliyor, UX tasarımı netleştirilmeli | Düşük | Değerlendirmede |
-| Google Gemini ücretsiz katman kota sınırı (günlük 20 istek, `gemini-2.5-flash`) — yoğun testte hızla dolabiliyor | Bilgi amaçlı | Kota planı gözden geçirilmeli |
-
-Detaylı test bulguları ve kanıtları için ekip içi test raporuna bakınız.
-
----
-
 ## ✅ Test Kapsamı
 
 Proje, aşağıdaki kategorilerde manuel test edilmiştir:

@@ -109,8 +109,7 @@ with col_left:
     strategies = ["Zero-Shot Prompting (Örneksiz)", "Few-Shot Prompting (Örnekli)", "Chain-of-Thought (CoT)"]
     prompt_style = st.selectbox("🧠 Prompt Tekniği (Metodu)", options=strategies, index=0)
     
-    languages = ["Türkçe", "İngilizce", "Almanca", "Fransızca", "İspanyolca"]
-    output_language = st.selectbox("🌐 Çıktı Dili", options=languages, index=0)
+    output_language = "Türkçe"
     
     output_types = ["Tümü", "Instagram Postu", "Reklam Metni", "E-mail", "Website Açıklaması", "SMS Kampanyası"]
     output_type = st.selectbox("📄 İstediğiniz Çıktı Türü", options=output_types, index=0)
