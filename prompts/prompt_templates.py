@@ -1,233 +1,148 @@
+# -*- coding: utf-8 -*-
 """
-prompt_templates.py
-PersonaCraft AI Prompt Engineering
-
-Bu modül, generator.py ve Streamlit arayüzünün kullanacağı tek giriş noktasını
-(get_prompt) ve üç prompt engineering tekniğini içerir:
-- Zero-shot
-- Few-shot
-- Chain-of-Thought
+PersonaCraft AI - Prompt Templates
+Contains specialized prompt engineering templates for Zero-shot, Few-shot, and Chain of Thought strategies.
 """
 
-# ---------------------------------------------------
-# AVAILABLE OPTIONS
-# ---------------------------------------------------
+SYSTEM_PROMPT = (
+    "Sen profesyonel, üst düzey bir dijital pazarlama stratejisti ve metin yazarısın (Copywriter). "
+    "Görevin, verilen ürünü/hizmeti seçilen hedef kitlenin psikolojik profiline, ilgi alanlarına, "
+    "ihtiyaçlarına ve satın alma motivasyonlarına göre konumlandırıp, ikna gücü yüksek pazarlama metinleri üretmektir. "
+    "Ürettiğin içerik samimi, profesyonel, ilgi çekici ve eyleme geçirici (Call to Action içeren) olmalıdır."
+)
 
-AUDIENCES = [
-    "Gençler", "Aileler", "Kurumsal", "Teknoloji Meraklıları", "Öğrenciler", "Premium Kullanıcılar"
-]
+PERSONA_GUIDE = """
+[PERSONA REHBERİ (HEDEF KİTLE VE İLETİŞİM TONU UYUMU)]
+- Hedef Kitle: {target_audience}
+- İletişim Tonu: {tone}
+- Dil: {language}
 
-OUTPUT_TYPES = [
-    "Instagram Postu", "Reklam Metni", "E-mail", "Website Açıklaması", "SMS Kampanyası"
-]
-
-TECHNIQUES = ["zero-shot", "few-shot", "chain-of-thought"]
-
-# ---------------------------------------------------
-# PERSONA GUIDE
-# ---------------------------------------------------
-
-PERSONA_GUIDE = {
-    "Gençler": "- Enerjik, samimi ve kısa cümleler kullan. Trend odaklı ol. Emoji kullanılabilir.",
-    "Aileler": "- Güven, dayanıklılık ve uzun ömür vurgusu yap.",
-    "Kurumsal": "- Profesyonel, resmi ve güven veren bir dil kullan.",
-    "Teknoloji Meraklıları": "- Teknik özellikleri ve performansı öne çıkar.",
-    "Öğrenciler": "- Bütçe dostu, günlük kullanım ve pratik faydalara odaklan.",
-    "Premium Kullanıcılar": "- Kalite, prestij ve ayrıcalık hissini ön plana çıkar."
-}
-
-# ---------------------------------------------------
-# OUTPUT FORMAT RULES
-# ---------------------------------------------------
-
-OUTPUT_FORMAT_RULES = {
-    "Instagram Postu": "3-4 cümle yaz. Sonunda 3-5 hashtag ve güçlü CTA kullan.",
-    "Reklam Metni": "Başlık + 2 kısa açıklama cümlesi + CTA oluştur.",
-    "E-mail": "Konu satırı, hitap, 3 kısa paragraf ve kapanış yaz.",
-    "Website Açıklaması": "SEO uyumlu, iki paragraf ve fayda odaklı yaz.",
-    "SMS Kampanyası": "160 karakteri geçme. Net CTA kullan."
-}
-
-# ---------------------------------------------------
-# SYSTEM PROMPT (tüm teknikler tarafından paylaşılır)
-# ---------------------------------------------------
-
-SYSTEM_PROMPT = """
-You are an expert digital marketing specialist.
-
-Rules:
-- Adapt content to the target audience.
-- Never invent product specifications.
-- Never make misleading claims.
-- Follow the requested output format exactly.
-- Write the final output only in Turkish.
+Bu hedef kitleye hitap ederken, seçilen iletişim tonuna ({tone}) tam uyum sağla. Örneğin; gençlere hitap ediyorsan samimi, dinamik, emojilerle zenginleştirilmiş ve trend kelimeler içeren bir dil kullan; kurumsal bir kitleye hitap ediyorsan profesyonel, veri odaklı, saygın ve güven verici bir dil tercih et.
 """
 
-# ---------------------------------------------------
-# FEW-SHOT EXAMPLES
-# Her output_type için en az bir örnek. Tanımsız bir output_type gelirse
-# GENERIC_FALLBACK_EXAMPLE kullanılır, böylece prompt asla örneksiz kalmaz.
-# ---------------------------------------------------
+OUTPUT_FORMAT_RULES = """
+[ÇIKTI FORMAT KURALLARI]
+- İstenen Çıktı Türü: {output_type}
 
-FEW_SHOT_EXAMPLES = {
-    "Instagram Postu": [
-        {
-            "product": "Kablosuz Kulaklık",
-            "audience": "Gençler",
-            "output": "Kulağına tak, ritmi yakala! 🎧 Yeni nesil kablosuz kulaklıkla müzik her an yanında. Hemen keşfet! #müzik #teknoloji #özgürlük"
-        }
-    ],
-    "Reklam Metni": [
-        {
-            "product": "Termos",
-            "audience": "Aileler",
-            "output": "Sıcaklığı Koruyan Güven\nAileniz için uzun süre sıcak ve soğuk koruma. Şimdi sipariş verin!"
-        }
-    ],
-    "E-mail": [
-        {
-            "product": "Yazılım Aboneliği",
-            "audience": "Öğrenciler",
-            "output": "Konu: Öğrencilere Özel %50 İndirim Başladı!\n\nMerhaba,\n\nBütçeni zorlamadan üretkenliğini artırmak ister misin? Öğrenci aboneliğimizle tüm premium özelliklere erişebilirsin.\n\nBu ay kayıt olanlara özel %50 indirim uyguluyoruz. Fırsat sınırlı sürede geçerli.\n\nHemen öğrenci mailinle kaydol.\n\nİyi çalışmalar,\nEkibimiz"
-        }
-    ],
-    "Website Açıklaması": [
-        {
-            "product": "Akıllı Saat",
-            "audience": "Teknoloji Meraklıları",
-            "output": "Yeni nesil akıllı saatimiz, gelişmiş sensör teknolojisi ve uzun pil ömrüyle performansınızı bir üst seviyeye taşır. Kalp atış hızı, uyku takibi ve bildirim yönetimi tek bir cihazda birleşiyor.\n\nGünlük kullanımdan spor performansına kadar her senaryoda güvenilir veriler sunan bu cihaz, teknolojiyi seven herkes için tasarlandı. Hemen inceleyin ve fark yaratan detayları keşfedin."
-        }
-    ],
-    "SMS Kampanyası": [
-        {
-            "product": "Kahve Zinciri Kampanyası",
-            "audience": "Gençler",
-            "output": "2. kahve %50 indirimli! Sadece bugün geçerli. Hemen uğra: [link]"
-        }
-    ],
-}
+Ürettiğin metin şu bileşenleri içermelidir:
+1. 📸 **Görsel Öneri (Visual Suggestion):** Paylaşım veya reklam için uygun, kitlenin dikkatini çekecek bir görsel/tasarım fikri.
+2. ⚡ **Dikkat Çekici Başlık (Headline):** İlk saniyede merak uyandıracak, kancalı (hook) bir başlık.
+3. ✍️ **Ana Metin (Body Text):** Ürünün faydalarını hedef kitlenin en büyük sorununa (pain point) değinerek anlatan ikna edici gövde metni.
+4. 🚀 **Eylem Çağrısı (Call to Action - CTA):** Kullanıcıyı tıklamaya, satın almaya veya kaydolmaya yönlendiren net bir eylem çağrısı.
+5. 🏷️ **Hashtag'ler (Eğer uygunsa):** Platform trendlerine uygun, etkileşimi artıracak hashtag önerileri.
+"""
 
-GENERIC_FALLBACK_EXAMPLE = {
-    "product": "Örnek Ürün",
-    "audience": "Kurumsal",
-    "output": "Bu ürün, hedef kitlenin somut ihtiyaçlarına yönelik faydalar sunar ve profesyonel bir tonla anlatılır."
-}
+def build_zero_shot_prompt(product_name, product_desc, target_audience, tone, output_type, language):
+    """
+    Zero-shot prompting strategy.
+    Direct generation based on guidelines without examples.
+    """
+    return f"""
+Giriş bilgilerini kullanarak, hedef kitleye özel doğrudan bir pazarlama metni oluştur.
 
-# Chain-of-Thought çıktısını "analiz" ve "final metin" olarak ayırmak için kullanılır.
-FINAL_OUTPUT_MARKER = "Final Content:"
+[ÜRÜN BİLGİLERİ]
+Ürün / Hizmet Adı: {product_name}
+Açıklama ve Özellikler: {product_desc}
 
+{PERSONA_GUIDE.format(target_audience=target_audience, tone=tone, language=language)}
 
-def _validate_inputs(product: str, audience: str, output_type: str) -> None:
-    if not product or not product.strip():
-        raise ValueError("Ürün adı boş olamaz.")
-    if audience not in AUDIENCES:
-        raise ValueError(f"Geçersiz kitle: {audience}. Beklenen: {AUDIENCES}")
-    if output_type not in OUTPUT_TYPES:
-        raise ValueError(f"Geçersiz çıktı türü: {output_type}. Beklenen: {OUTPUT_TYPES}")
+{OUTPUT_FORMAT_RULES.format(output_type=output_type)}
 
+[GÖREV]
+Yukarıdaki kuralları ve ürün bilgilerini harmanlayarak, sıfırdan doğrudan (Zero-shot) mükemmel bir pazarlama içeriği üret.
+"""
 
-def build_zero_shot_prompt(product: str, audience: str, output_type: str) -> str:
-    """En temel teknik: örnek veya ara adım yok, doğrudan talimat.
-    Diğer tekniklerle kıyaslama (baseline) için kullanılır."""
-    _validate_inputs(product, audience, output_type)
-    return f"""{SYSTEM_PROMPT}
+def build_few_shot_prompt(product_name, product_desc, target_audience, tone, output_type, language):
+    """
+    Few-shot prompting strategy.
+    Contains high-quality in-context examples showing the expected tone, structure, and format.
+    """
+    examples = """
+[ÖRNEK 1]
+Ürün: Kablosuz Kulaklık (Gürültü Engelleyici Pro)
+Açıklama: Aktif Gürültü Engelleme, 40 saat pil ömrü, Bluetooth 5.4.
+Kitle: Gençler
+Ton: Dinamik & Trend
+Dil: Türkçe
+Format: Instagram Postu
+Çıktı:
+📸 **Görsel Öneri:** Kütüphanede veya kalabalık bir kafede kahvesini yudumlarken gözlerini kapatmış, müziğin ritmine kapılmış genç bir kadın. Arka plan hafif flu, kulaklık üzerinde şık bir ışık detayı var.
+⚡ **Başlık:** SENİN VIBE'IN, SENİN KURALIN! 🎧
+✍️ **Ana Metin:** Dünyanın gürültüsünü kapat, kendi ritmine odaklan! 🚀 Yeni nesil ANC özellikli Kablosuz Kulaklık Pro ile kütüphanede, otobüste veya kafede sadece senin müziğin konuşsun. 40 saatlik devasa pil ömrüyle müzik maratonun hiç bitmesin. 
+🚀 **CTA:** Şimdi bio'daki linke tıkla, lansmana özel %20 indirimle ritmi yakala!
+🏷️ **Hashtag'ler:** #GürültüyüKapat #KulaklıkPro #MüzikHerYerde #GençlikModu
 
-TASK:
-Write a {output_type}.
+[ÖRNEK 2]
+Ürün: Akıllı Robot Süpürge (SmartClean v5)
+Açıklama: 6000 Pa emiş gücü, kendi kendini boşaltan istasyon, akıllı haritalama.
+Kitle: Aileler
+Ton: Samimi & Çözüm Odaklı
+Dil: Türkçe
+Format: Reklam Metni
+Çıktı:
+📸 **Görsel Öneri:** Oturma odasında yerde çocuklarıyla oyun oynayan mutlu bir anne ve baba. Arka planda ise sessizce kendi kendine çalışan şık bir robot süpürge.
+⚡ **Başlık:** Hafta sonunu temizliğe değil, ailenize ayırın! ❤️
+✍️ **Ana Metin:** Hafta içi iş koşturmacası, hafta sonu ise ev temizliği... Sevdiklerinizle geçireceğiniz değerli saatleri temizlik yaparak harcamaktan sıkılmadınız mı? SmartClean v5, siz sevdiklerinizle mutlu anılar biriktirirken evinizi baştan aşağı pırıl pırıl yapar. 6000 Pa emiş gücüyle en zorlu tozları bile anında yutar.
+🚀 **CTA:** Evinizdeki yeni yardımcınızla tanışmak için hemen tıklayın ve ücretsiz kargo fırsatından yararlanın!
+🏷️ **Hashtag'ler:** #SmartClean #AileZamanı #TemizEvler #AkıllıYaşam
+"""
 
-PRODUCT:
-{product}
+    return f"""
+Aşağıdaki örneklerdeki yapısal kurguyu, pazarlama tonunu ve formatı analiz et. Ardından, benzer kalitede ve hedef kitleye odaklı yeni bir kampanya metni oluştur.
 
-TARGET AUDIENCE:
-{audience}
-{PERSONA_GUIDE[audience]}
+{examples}
 
-OUTPUT FORMAT:
-{OUTPUT_FORMAT_RULES[output_type]}
+[GÖREV - SIRA SİZDE]
+Şimdi aşağıdaki bilgiler için yukarıdaki örneklerin kalitesine, tonuna ve yapısına uygun olarak kusursuz bir içerik üret:
 
-Return only the final marketing content.
-""".strip()
+Ürün / Hizmet Adı: {product_name}
+Açıklama ve Özellikler: {product_desc}
 
+{PERSONA_GUIDE.format(target_audience=target_audience, tone=tone, language=language)}
 
-def build_few_shot_prompt(product: str, audience: str, output_type: str) -> str:
-    """Modelin ton/format beklentisini örnekler üzerinden gösterir.
-    output_type için tanımlı örnek yoksa GENERIC_FALLBACK_EXAMPLE kullanılır."""
-    _validate_inputs(product, audience, output_type)
-    examples = FEW_SHOT_EXAMPLES.get(output_type) or [GENERIC_FALLBACK_EXAMPLE]
-    examples_text = "\n\n".join(
-        f"Example {i+1}\nProduct:{e['product']}\nAudience:{e['audience']}\nOutput:\n{e['output']}"
-        for i, e in enumerate(examples)
-    )
-    return f"""{SYSTEM_PROMPT}
+{OUTPUT_FORMAT_RULES.format(output_type=output_type)}
 
-Study the examples.
+Çıktı:
+"""
 
-{examples_text}
+def build_chain_of_thought_prompt(product_name, product_desc, target_audience, tone, output_type, language):
+    """
+    Chain of Thought (CoT) prompting strategy.
+    Guides the model to reason step-by-step through audience needs, value propositions, and tone before delivering the content.
+    """
+    return f"""
+Bu görevde, pazarlama mesajını oluşturmadan önce adım adım düşünmeni ve analitik bir süreç izlemeni istiyoruz. 
+Aşağıdaki adımları sırasıyla takip et ve nihai metni en sonda sun:
 
-Now create a new {output_type}.
+[ÜRÜN BİLGİLERİ]
+Ürün / Hizmet Adı: {product_name}
+Açıklama ve Özellikler: {product_desc}
 
-PRODUCT:
-{product}
+{PERSONA_GUIDE.format(target_audience=target_audience, tone=tone, language=language)}
 
-TARGET AUDIENCE:
-{audience}
-{PERSONA_GUIDE[audience]}
+{OUTPUT_FORMAT_RULES.format(output_type=output_type)}
 
-OUTPUT FORMAT:
-{OUTPUT_FORMAT_RULES[output_type]}
+[DÜŞÜNCE ZİNCİRİ ADIMLARI]
+Adım 1 - Hedef Kitle Analizi: Seçilen kitlenin ({target_audience}) bu ürünle/hizmetle ilgili en büyük problemi (pain point), engeli ve ana satın alma motivasyonu nedir?
+Adım 2 - Değer Önerisi (Value Proposition): {product_name} ürünü/hizmeti, bu kitlenin problemini nasıl çözüyor? Kitleye sunacağı benzersiz fayda ve değer nedir?
+Adım 3 - Ton ve Stil Belirleme: Kitleye hitap ederken seçilen {tone} tonuna uygun olarak hangi üslup, kelime grupları ve yaklaşım kullanılmalı?
+Adım 4 - Çıktı Kurgusu: {output_type} formatının en kritik başarı faktörleri ve kancaları nelerdir?
 
-Return only the final marketing content.
-""".strip()
+[RAPOR VE NİHAİ PAZARLAMA METNİ]
+Lütfen yukarıdaki 4 adımlık analizi başlıklar halinde detaylandırarak yaz, ardından analiz sonuçlarına dayanan en yüksek dönüşümü sağlayacak nihai pazarlama metnini "NİHAİ PAZARLAMA METNİ" başlığı altında sun.
+"""
 
-
-def build_chain_of_thought_prompt(product: str, audience: str, output_type: str) -> str:
-    """Model önce kısa bir pazarlama stratejisi kurar, sonra final metni üretir.
-    'Final Content:' işaretleyicisinden sonrasını extract_final_output() ile ayıklayabilirsin."""
-    _validate_inputs(product, audience, output_type)
-    return f"""{SYSTEM_PROMPT}
-
-Create a short marketing strategy before writing.
-
-PRODUCT:
-{product}
-
-TARGET AUDIENCE:
-{audience}
-{PERSONA_GUIDE[audience]}
-
-OUTPUT FORMAT:
-{OUTPUT_FORMAT_RULES[output_type]}
-
-Format your response EXACTLY like this:
-
-Marketing Strategy:
-- Audience Need: <this audience's main need/expectation for this product>
-- Key Benefit: <the single strongest benefit to highlight>
-- Marketing Angle: <the emotional or rational angle to use>
-
-{FINAL_OUTPUT_MARKER}
-<only the requested {output_type}, written in Turkish, nothing else after this>
-""".strip()
-
-
-def extract_final_output(response_text: str) -> str:
-    """generator.py, Chain-of-Thought çıktısından kullanıcıya gösterilecek
-    final metni bu fonksiyonla ayıklar. Marker bulunamazsa (model formatı tam
-    takip etmezse) tüm metni döner, böylece demo'da boş ekran görülmez."""
-    if FINAL_OUTPUT_MARKER in response_text:
-        return response_text.split(FINAL_OUTPUT_MARKER, 1)[1].strip()
-    return response_text.strip()
-
-
-def get_prompt(product: str, audience: str, output_type: str, technique: str) -> str:
-    """generator.py ve Streamlit arayüzünün çağıracağı tek giriş noktası."""
-    _validate_inputs(product, audience, output_type)
-    if technique not in TECHNIQUES:
-        raise ValueError(f"Geçersiz teknik: {technique}. Beklenen: {TECHNIQUES}")
-
-    builders = {
-        "zero-shot": build_zero_shot_prompt,
-        "few-shot": build_few_shot_prompt,
-        "chain-of-thought": build_chain_of_thought_prompt,
-    }
-    return builders[technique](product, audience, output_type)
+def get_prompt_package(product_name, product_desc, target_audience, tone, prompt_style, output_type, language="Türkçe"):
+    """
+    Seçilen prompt stratejisine uygun şablonu doldurarak (system_prompt, user_prompt) paketini döndürür.
+    """
+    style_lower = prompt_style.lower()
+    
+    if "few" in style_lower:
+        user_prompt = build_few_shot_prompt(product_name, product_desc, target_audience, tone, output_type, language)
+    elif "chain" in style_lower or "thought" in style_lower or "cot" in style_lower:
+        user_prompt = build_chain_of_thought_prompt(product_name, product_desc, target_audience, tone, output_type, language)
+    else: # Zero-shot varsayılan
+        user_prompt = build_zero_shot_prompt(product_name, product_desc, target_audience, tone, output_type, language)
+        
+    return SYSTEM_PROMPT, user_prompt
