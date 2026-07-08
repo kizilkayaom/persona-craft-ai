@@ -211,5 +211,5 @@ Proje, aşağıdaki kategorilerde manuel test edilmiştir:
 - Dosya indirme testi
 - Hata ve kenar durum (ağ hatası, rate limit, uzun girdi) testleri
 
-Toplam ~30 senaryo test edilmiş, sonuçlar ekip ile paylaşılmıştır.
+Toplam ~30 senaryo test edilmiştir.
 
