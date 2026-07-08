@@ -138,9 +138,17 @@ with col_right:
                     language=output_language,
                     api_key_override=api_key_input if api_key_input.strip() != "" else None
                 )
-                
-                # Başarı mesajı
-                st.markdown('<div class="success-alert">Metinler Başarıyla Oluşturuldu!</div>', unsafe_allow_html=True)
+
+                    # Önce hata kontrolü yap
+                if generated_text.startswith("Hata:") or generated_text.startswith("API Çağrısı"):
+                    st.error(generated_text)
+                    st.stop()
+
+                # Başarı mesajını sadece gerçekten başarılıysa göster
+                st.markdown(
+                    '<div class="success-alert">Metinler Başarıyla Oluşturuldu!</div>',
+                unsafe_allow_html=True
+)
                 
                 # Chain-of-Thought akıl yürütmesini ayırıp göstermek
                 if "chain" in prompt_style.lower() or "cot" in prompt_style.lower():
